@@ -494,29 +494,37 @@ def help_page():
 # Halaman landing
 def landing_page():
     st.markdown("""
-    <div class="title-box">
+    <div class="title-box" style="text-align: center;">
         <h1>Welcome to Go Motion</h1>
     </div>
-    <div class="info-box">
+    <div class="info-box" style="text-align: center;">
         <p>Platform untuk deteksi dini risiko kesehatan Anda</p>
     </div>
     """, unsafe_allow_html=True)
-
 
     # Animasi Lottie
     lottie_animation = load_lottie_url("https://lottie.host/2f5893df-cc66-48be-be2d-9092bd6a9877/xKC7RTy8kE.json")
     if lottie_animation:
         st_lottie(lottie_animation, height=300, key="landing")
 
-    col1, col2 = st.columns([1, 1])
+    # Centering the buttons using a column layout
+    col1, col2, col3 = st.columns([2, 1, 2])
     with col1:
-        if st.button("Sign Up Now"):
+        st.write("")  # Just a placeholder to keep the structure
+
+    with col2:
+        if st.button("Sign Up"):
             st.session_state['page'] = 'signup'
             st.experimental_rerun()
-    with col2:
+
+        st.write("")  # Add some space between buttons
+
         if st.button("Sign In"):
             st.session_state['page'] = 'login'
             st.experimental_rerun()
+
+    with col3:
+        st.write("")  # Just a placeholder to keep the structure
 
  # Menampilkan artikel dalam kolom
     display_articleslp()
