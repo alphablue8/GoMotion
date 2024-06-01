@@ -1,7 +1,21 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
+from streamlit_lottie import st_lottie
 import auth
 import pickle
+import requests
+import re
+from PIL import Image
+import sqlite3
+import plotly.express as px
+import plotly.graph_objects as go
+
+# Fungsi untuk memuat animasi Lottie dari URL
+def load_lottie_url(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
 
 # Fungsi untuk memuat model machine learning
 def load_model():
@@ -15,7 +29,7 @@ def load_css():
         """
         <style>
         .stApp {
-            background-image: url("https://r4.wallpaperflare.com/wallpaper/535/845/69/digital-art-artwork-fantasy-art-planet-sun-hd-wallpaper-d866fd38b0b06cd800cc016ed8d284fa.jpg");
+            background-image: url("https://img.freepik.com/free-photo/sports-equipment-paper-background_23-2147735014.jpg?t=st=1717171847~exp=1717175447~hmac=8ce274d41b7add0762ef7d267cdad64bb214a4ea239582b26e4ba176d2e3870f&w=1060");
             background-size: cover;
             transition: background 0.5s ease;
         }
@@ -50,7 +64,7 @@ def load_css():
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin: 0 1rem;
+            margin: 0 0.5rem;
             transition: background-color 0.3s ease;
         }
         .center-buttons button:hover {
@@ -79,9 +93,62 @@ def load_css():
             text-decoration: none;
             font-weight: bold;
         }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 4rem;
+        }
+        .button-container .stButton {
+            margin: 0 0.5rem;
+        }
+        .article-container {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .article-container img {
+            border-radius: 10px;
+        }
         </style>
         """, unsafe_allow_html=True
     )
+
+# Fungsi Validasi
+def check_uppercase(password):
+    return any(c.isupper() for c in password)
+
+def check_lowercase(password):
+    return any(c.islower() for c in password)
+
+def check_digit(password):
+    return any(c.isdigit() for c in password)
+
+def check_no_symbols(password):
+    return password.isalnum()
+
+def is_valid_password(password):
+    return check_uppercase(password) and check_lowercase(password) and check_digit(password) and check_no_symbols(password)
+
+def is_valid_email(email):
+    return email.endswith('@gmail.com')
+
+
+# Fungsi untuk menyimpan artikel yang diunggah
+def save_article(title, description, image, link):
+    if 'articles' not in st.session_state:
+        st.session_state['articles'] = []
+    st.session_state['articles'].append({
+        "title": title,
+        "description": description,
+        "image": image,
+        "link": link
+    })
+
+# Fungsi untuk membuat koneksi ke database
+def create_connection():
+    return sqlite3.connect('users.db')
 
 # Halaman registrasi
 def signup():
@@ -90,13 +157,26 @@ def signup():
     with st.form("signup_form"):
         email = st.text_input("Email")
         password = st.text_input("Password", type="password")
+        confirm_password = st.text_input("Confirm Password", type="password")
         role = st.selectbox("Role", ["user", "admin"])
         submit_button = st.form_submit_button(label="Sign Up")
-        back_button = st.form_submit_button(label="Back to Landing Page")
+
+        # Checkbox ketentuan password
+        st.write("Password must contain:")
+        st.checkbox("At least one uppercase letter", value=check_uppercase(password), disabled=True)
+        st.checkbox("At least one lowercase letter", value=check_lowercase(password), disabled=True)
+        st.checkbox("At least one digit", value=check_digit(password), disabled=True)
+        st.checkbox("No symbols", value=check_no_symbols(password), disabled=True)
 
         if submit_button:
             if not email or not password:
                 st.error("Email and Password cannot be empty")
+            elif not is_valid_email(email):
+                st.error("Email harus diakhiri dengan @gmail.com")
+            elif not is_valid_password(password):
+                st.error("Password harus mengandung huruf besar, huruf kecil, dan angka. Tidak boleh ada simbol.")
+            elif password != confirm_password:
+                st.error("Password dan konfirmasi password tidak cocok.")
             elif auth.user_exists(email):
                 st.error("Email already exists")
             elif role == 'admin':
@@ -104,9 +184,10 @@ def signup():
             else:
                 auth.create_user(email, password, role)
                 st.success("User created successfully")
-        if back_button:
-            st.session_state['page'] = 'landing'
-            st.experimental_rerun()
+
+    if st.button("Back"):
+        st.session_state['page'] = 'landing'
+        st.experimental_rerun()
 
 # Halaman login
 def login():
@@ -117,11 +198,14 @@ def login():
         password = st.text_input("Password", type="password")
         role = st.selectbox("Role", ["user", "admin"])
         submit_button = st.form_submit_button(label="Login")
-        back_button = st.form_submit_button(label="Back to Landing Page")
 
         if submit_button:
             if not email or not password:
                 st.error("Email and Password cannot be empty")
+            elif not is_valid_email(email):
+                st.error("Email harus diakhiri dengan @gmail.com")
+            elif not is_valid_password(password):
+                st.error("Password harus mengandung huruf besar, huruf kecil, dan angka. Tidak boleh ada simbol.")
             else:
                 user = auth.check_credentials(email, password, role)
                 if user:
@@ -132,16 +216,51 @@ def login():
                     st.experimental_rerun()
                 else:
                     st.error("Invalid email or password")
-        if back_button:
-            st.session_state['page'] = 'landing'
-            st.experimental_rerun()
+
+    if st.button("Back"):
+        st.session_state['page'] = 'landing'
+        st.experimental_rerun()
 
 # Halaman utama setelah login
 def main_page():
-    st.title("Welcome to Go Motion")
+    st.title("Welcome to Go Motion Dashboard")
     st.write(f"Hello, {st.session_state['email']}! You are logged in as {st.session_state['role']}.")
-    st.write(f"Status: Login sebagai {st.session_state['role']}.")
-    st.write("This is the main page of the application.")
+
+    # Contoh data untuk grafik
+    bmi_data = {
+        'Category': ['Insufficient Weight', 'Normal Weight', 'Overweight Level 1', 'Overweight Level 2', 'Obesity Level 1', 'Obesity Level 2', 'Obesity Level 3'],
+        'Count': [5, 20, 10, 7, 15, 5, 3]
+    }
+    fig = px.bar(
+        bmi_data, 
+        x='Category', 
+        y='Count', 
+        title='BMI Categories Distribution',
+        template='plotly_dark'
+    )
+    fig.update_layout(
+        title={'x': 0.5, 'xanchor': 'center'},
+        font=dict(size=14),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)'
+    )
+
+    # Menampilkan grafik
+    st.plotly_chart(fig)
+
+    # Menampilkan grafik
+    st.plotly_chart(fig)
+
+    # Grafik interaktif lainnya
+    age_data = {
+        'Age Group': ['<18', '18-25', '26-35', '36-45', '46-55', '56-65', '>65'],
+        'Count': [5, 15, 20, 10, 7, 3, 2]
+    }
+    fig2 = px.pie(age_data, values='Count', names='Age Group', title='Age Distribution of Users')
+
+    st.plotly_chart(fig2)
+
+    st.write("Dashboard ini memberikan gambaran umum tentang data pengguna dan distribusi kategori BMI.")
 
     if st.button("Logout"):
         st.session_state['logged_in'] = False
@@ -151,7 +270,7 @@ def main_page():
 def articles_page():
     st.title("Articles")
     st.write("Here are some interesting articles for you to read.")
-    # Anda bisa menambahkan lebih banyak konten di sini
+    display_articles()
 
 # Halaman hitung BMI sebagai template untuk model ML
 def bmi_page():
@@ -174,24 +293,24 @@ def bmi_page():
 
 # Halaman klasifikasi obesitas
 def obesity_classification_page():
-    st.title("Cek Statusmu")
+    st.title("Check Your Condition")
 
     with st.form("obesity_form"):
-        age = st.number_input("Age", min_value=1, max_value=120)
+        age = st.slider("Age", min_value=1, max_value=120)
         gender = st.selectbox("Gender", ["Male", "Female"])
-        height = st.number_input("Height (in m)", min_value=0.0, max_value=3.0, step=0.01)
-        weight = st.number_input("Weight (in kg)", min_value=20, max_value=200)
+        height = st.slider("Height (in meters)", min_value=0.5, max_value=2.5, step=0.01)
+        weight = st.slider("Weight (in kg)", min_value=20, max_value=200)
 
         calc = st.selectbox("How often do you drink alcohol?", ["Never", "Sometimes", "Frequently", "Always"])
         favc = st.selectbox("Do you eat high caloric food frequently?", ["No", "Yes"])
-        fcvc = st.number_input("Do you usually eat vegetables in your meals?", min_value=0, max_value=10)
-        ncp = st.number_input("How many main meals do you have daily?", min_value=0, max_value=10)
+        fcvc = st.slider("Do you usually eat vegetables in your meals?", min_value=0, max_value=10)
+        ncp = st.slider("How many main meals do you have daily?", min_value=0, max_value=10)
         scc = st.selectbox("Do you monitor the calories you eat daily?", ["No", "Yes"])
         smoke = st.selectbox("Do you smoke?", ["No", "Yes"])
-        ch20 = st.number_input("How much water do you drink daily? (in liters)", min_value=0.0, max_value=10.0, step=0.1)
+        ch20 = st.slider("How much water do you drink daily? (in liters)", min_value=0.0, max_value=10.0, step=0.1)
         fhwo = st.selectbox("Family History With Overweight", ["No", "Yes"])
-        faf = st.number_input("How often do you have physical activity? (days per week)", min_value=0, max_value=7)
-        tue = st.number_input("How much time do you use technological devices daily? (in hours)", min_value=0, max_value=24)
+        faf = st.slider("How often do you have physical activity? (days per week)", min_value=0, max_value=7)
+        tue = st.slider("How much time do you use technological devices daily? (in hours)", min_value=0, max_value=24)
         caec = st.selectbox("Do you eat any food between meals?", ["No", "Sometimes", "Frequently", "Always"])
         mtrans = st.selectbox("Which transportation do you usually use?", ["Automobile", "Motorbike", "Bike", "Public Transportation", "Walking"])
 
@@ -213,64 +332,256 @@ def obesity_classification_page():
                 prediction = obesity_classifier.predict([[age, gender_value, height, weight, calc_value, favc_value, fcvc, ncp, scc_value, smoke_value, ch20, fhwo_value, faf, tue, caec_value, mtrans_value]])[0]
                 
                 st.write(f"Your BMI is: {weight / ((height) ** 2):.2f}")
+                # Display predicted health status
+                health_status = ""
                 if int(prediction) == 0:
-                     st.write(f"Predicted health status: Issufficient Weight")
-                if int(prediction) == 1:
-                     st.write(f"Predicted health status: Normal Weight")
-                if int(prediction) == 2:
-                     st.write(f"Predicted health status: OverWeight Level 1")
-                if int(prediction) == 3:
-                     st.write(f"Predicted health status: OverWeight Level 2")
-                if int(prediction) == 4:
-                     st.write(f"Predicted health status: Obesity Level 1")
-                if int(prediction) == 5:
-                     st.write(f"Predicted health status: Obesity Level 2")
-                if int(prediction) == 5:
-                     st.write(f"Predicted health status: Obesity Level 3")
+                    health_status = "Insufficient Weight"
+                elif int(prediction) == 1:
+                    health_status = "Normal Weight"
+                elif int(prediction) == 2:
+                    health_status = "Overweight Level 1"
+                elif int(prediction) == 3:
+                    health_status = "Overweight Level 2"
+                elif int(prediction) == 4:
+                    health_status = "Obesity Level 1"
+                elif int(prediction) == 5:
+                    health_status = "Obesity Level 2"
+                elif int(prediction) == 6:
+                    health_status = "Obesity Level 3"
+
+                st.write(f"Predicted health status: {health_status}")
+
+                # Get recommendations
+                workout = ""
+                calories = ""
+                food = ""
+
+                if health_status == "Insufficient Weight":
+                    workout = """
+                    - Latihan kekuatan 3 kali seminggu (contoh: angkat beban, push-up, pull-up) selama 30-45 menit per sesi
+                    - Latihan kardiovaskular ringan 2 kali seminggu (contoh: jalan cepat, bersepeda santai) selama 30 menit per sesi
+                    """
+                    calories = "2500-3000 kalori per hari"
+                    food = "Makanan tinggi protein seperti daging, ikan, telur, kacang-kacangan, serta karbohidrat kompleks seperti nasi merah, kentang, dan roti gandum."
+                elif health_status == "Normal Weight":
+                    workout = """
+                    - Latihan kardiovaskular 3 kali seminggu (contoh: lari, berenang, bersepeda) selama 30-60 menit per sesi
+                    - Latihan kekuatan 2 kali seminggu (contoh: latihan beban, yoga, pilates) selama 30-45 menit per sesi
+                    """
+                    calories = "2000-2500 kalori per hari"
+                    food = "Diet seimbang dengan sayuran, buah-buahan, protein tanpa lemak, dan karbohidrat kompleks."
+                elif health_status == "Overweight Level 1":
+                    workout = """
+                    - Latihan kardiovaskular 4-5 kali seminggu (contoh: aerobik, jogging, berenang) selama 30-60 menit per sesi
+                    - Latihan kekuatan 2 kali seminggu (contoh: latihan beban, bodyweight exercises) selama 30-45 menit per sesi
+                    """
+                    calories = "1500-2000 kalori per hari"
+                    food = "Makanan rendah lemak dan tinggi serat seperti sayuran hijau, buah-buahan, ikan, dan kacang-kacangan."
+                elif health_status == "Overweight Level 2":
+                    workout = """
+                    - Latihan kardiovaskular intens 5 kali seminggu (contoh: HIIT, berlari cepat, skipping) selama 30-60 menit per sesi
+                    - Latihan kekuatan 3 kali seminggu (contoh: latihan beban, resistance band exercises) selama 30-45 menit per sesi
+                    """
+                    calories = "1200-1500 kalori per hari"
+                    food = "Diet rendah kalori dengan sayuran, protein tanpa lemak, dan sedikit karbohidrat."
+                elif health_status == "Obesity Level 1":
+                    workout = """
+                    - Latihan kardiovaskular intens 5-6 kali seminggu (contoh: HIIT, berenang cepat, bersepeda cepat) selama 30-60 menit per sesi
+                    - Latihan kekuatan 3 kali seminggu (contoh: latihan beban, latihan kekuatan tubuh) selama 30-45 menit per sesi
+                    """
+                    calories = "1200-1500 kalori per hari"
+                    food = "Diet sangat rendah kalori dengan banyak sayuran, protein tanpa lemak, dan sedikit karbohidrat."
+                elif health_status == "Obesity Level 2":
+                    workout = """
+                    - Latihan kardiovaskular intens setiap hari (contoh: HIIT, berlari cepat, aerobik intens) selama 30-60 menit per sesi
+                    - Latihan kekuatan 4 kali seminggu (contoh: latihan beban, crossfit) selama 30-45 menit per sesi
+                    """
+                    calories = "1000-1200 kalori per hari"
+                    food = "Diet sangat rendah kalori dengan fokus pada sayuran hijau, protein tanpa lemak, dan hampir tidak ada karbohidrat."
+                elif health_status == "Obesity Level 3":
+                    workout = """
+                    - Latihan kardiovaskular intens setiap hari (contoh: HIIT, berlari cepat, aerobik intens) selama 30-60 menit per sesi
+                    - Latihan kekuatan 5 kali seminggu (contoh: latihan beban, crossfit) selama 30-45 menit per sesi
+                    """
+                    calories = "800-1000 kalori per hari"
+                    food = "Diet sangat rendah kalori dengan sayuran hijau, protein tanpa lemak, dan sangat sedikit karbohidrat."
+
+                st.write(f"Rekomendasi workout: {workout}")
+                st.write(f"Rekomendasi kalori harian: {calories}")
+                st.write(f"Rekomendasi jenis makanan: {food}")
             else:
                 st.error("Please fill in all the details")
+
+# Fungsi untuk menampilkan artikel
+def display_articles():
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute("SELECT * FROM articles")
+    articles = c.fetchall()
+    conn.close()
+
+# Menampilkan artikel dalam grid
+    cols_per_row = 2
+    num_articles = len(articles)
+    rows = (num_articles // cols_per_row) + (1 if num_articles % cols_per_row != 0 else 0)
+
+    for row in range(rows):
+        cols = st.columns(cols_per_row)
+        for col_num in range(cols_per_row):
+            article_index = row * cols_per_row + col_num
+            if article_index < num_articles:
+                article = articles[article_index]
+                with cols[col_num]:
+                    st.markdown(f"### {article[1]}")
+                    st.image(article[3], use_column_width=True)
+                    st.write(article[2])
+                    st.markdown(f"[Read more]({article[4]})")
+
+# Halaman admin untuk menambahkan dan menghapus artikel
+def admin_page():
+    st.title("Admin Page")
+    st.write("Manage articles")
+
+    with st.form("article_form"):
+        title = st.text_input("Title")
+        description = st.text_area("Description")
+        image_url = st.text_input("Image URL")
+        url = st.text_input("Article URL")
+        submit_button = st.form_submit_button(label="Add Article")
+
+        if submit_button:
+            if title and description and image_url and url:
+                conn = create_connection()
+                c = conn.cursor()
+                c.execute("INSERT INTO articles (title, description, image_url, url) VALUES (?, ?, ?, ?)", (title, description, image_url, url))
+                conn.commit()
+                conn.close()
+                st.success("Article added successfully")
+            else:
+                st.error("All fields are required")
+
+    st.write("### Existing Articles")
+
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute("SELECT * FROM articles")
+    articles = c.fetchall()
+    conn.close()
+
+    for article in articles:
+        st.markdown(f"#### {article[1]}")
+        st.image(article[3], use_column_width=True)
+        st.write(article[2])
+        st.markdown(f"[Read more]({article[4]})")
+        if st.button(f"Delete {article[1]}", key=article[0]):
+            delete_article(article[0])
+            st.success(f"Article '{article[1]}' deleted successfully")
+            st.experimental_rerun()
+
+# Fungsi untuk menghapus artikel dari database
+def delete_article(article_id):
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute("DELETE FROM articles WHERE id = ?", (article_id,))
+    conn.commit()
+    conn.close()
 
 # Halaman bantuan
 def help_page():
     st.title("Help")
     st.write("This is the help page. How can we assist you?")
-    # Anda bisa menambahkan lebih banyak konten di sini
 
-# Halaman landing page
+# Halaman landing
 def landing_page():
-    st.markdown(
-        """
-        <div class="title-box">
-            <h1>Go Motion</h1>
-        </div>
-        <div class="info-box">
-            <p>Aplikasi Go Motion merupakan solusi terbaik untuk membuat hidup menjadi lebih sehat dengan meningkatkan kegiatan aktifitas fisik.</p>
-        </div>
-        <div class="extra-box">
-            <h3>Recommended Articles</h3>
-            <ul>
-                <li><a href="#" target="_blank">Article 1</a></li>
-                <li><a href="#" target="_blank">Article 2</a></li>
-                <li><a href="#" target="_blank">Article 3</a></li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True
-    )
+    st.markdown("""
+    <div class="title-box">
+        <h1>Welcome to Go Motion</h1>
+    </div>
+    <div class="info-box">
+        <p>Platform untuk deteksi dini risiko kesehatan Anda</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    if st.session_state.get('redirect_page'):
-        st.session_state['page'] = st.session_state['redirect_page']
-        st.session_state['redirect_page'] = None
-        st.experimental_rerun()
 
-    if st.button("Sign Up Now"):
-        st.session_state['page'] = 'signup'
-        st.experimental_rerun()
+    # Animasi Lottie
+    lottie_animation = load_lottie_url("https://lottie.host/2f5893df-cc66-48be-be2d-9092bd6a9877/xKC7RTy8kE.json")
+    if lottie_animation:
+        st_lottie(lottie_animation, height=300, key="landing")
 
-    if st.button("Sign In"):
-        st.session_state['page'] = 'login'
-        st.experimental_rerun()
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        if st.button("Sign Up Now"):
+            st.session_state['page'] = 'signup'
+            st.experimental_rerun()
+    with col2:
+        if st.button("Sign In"):
+            st.session_state['page'] = 'login'
+            st.experimental_rerun()
 
-# Navigasi antara halaman
+ # Menampilkan artikel dalam kolom
+    display_articleslp()
+
+    st.markdown("""
+    <div class="extra-box">
+        <p>Tentang Kami</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+# Menampilkan artikel dalam kolom
+def display_articleslp():
+    articles = [
+        {
+            "title": "Sit Down While You Eat. It Makes A Big Difference.",
+            "description": "Learn about the essential nutrients your body needs.",
+            "image_url": "https://d35oenyzp35321.cloudfront.net/MHC_Blog_Health_Benefits_of_Sitting_Down_to_Eat_38a8bf3be5.jpg",
+            "url": "https://www.maxhealthcare.in/blogs/sit-down-while-you-eat-it-makes-big-difference"
+        },
+        {
+            "title": "Indian Diet Plan In Pregnancy",
+            "description": "Discover how staying healthy in pregnancy.",
+            "image_url": "https://d35oenyzp35321.cloudfront.net/indian_diet_plan_ae5b9f7f27.jpg",
+            "url": "https://www.maxhealthcare.in/blogs/indian-diet-plan-pregnancy"
+        },
+        {
+            "title": "Understanding BMI",
+            "description": "A guide to understanding Body Mass Index and its implications.",
+            "image_url": "https://d35oenyzp35321.cloudfront.net/love_your_age_fce9d54f64.jpg",
+            "url": "https://www.maxhealthcare.in/blogs/love-your-age"
+        },
+        {
+            "title": "Healthy Eating on a Budget",
+            "description": "Tips for maintaining a healthy diet without breaking the bank.",
+            "image_url": "https://via.placeholder.com/150",
+            "url": "https://example.com/article4"
+        },
+        {
+            "title": "Managing Stress",
+            "description": "Techniques to help you manage stress effectively.",
+            "image_url": "https://via.placeholder.com/150",
+            "url": "https://example.com/article5"
+        },
+        {
+            "title": "The Role of Sleep in Health",
+            "description": "Learn about the importance of sleep for your wellbeing.",
+            "image_url": "https://via.placeholder.com/150",
+            "url": "https://example.com/article6"
+        }
+    ]
+
+    st.markdown("## Rekomendasi Artikel")
+
+    for i in range(0, len(articles), 3):
+        cols = st.columns(3)
+        for j in range(3):
+            if i + j < len(articles):
+                article = articles[i + j]
+                with cols[j]:
+                    st.image(article["image_url"], use_column_width=True)
+                    st.markdown(f"### {article['title']}")
+                    st.write(f"{article['description']} [Read more]({article['url']})")
+
+
+# Fungsi utama untuk mengatur halaman-halaman
 def main():
     load_css()
     
@@ -285,9 +596,9 @@ def main():
         with st.sidebar:
             selected = option_menu(
                 menu_title="Menu",
-                options=["Home", "Articles", "Calculate BMI", "Cek Statusmu", "Help", "Admin Page", "Logout"]
+                options=["Home", "Articles", "Calculate BMI", "Check Your Condition", "Help", "Admin Page", "Logout"]
                 if st.session_state['role'] == 'admin'
-                else ["Home", "Articles", "Calculate BMI", "Cek Statusmu", "Help", "Logout"],
+                else ["Home", "Articles", "Calculate BMI", "Check Your Condition", "Help", "Logout"],
                 icons=["house", "book", "calculator", "check-circle", "question-circle", "gear", "door-open"],
                 menu_icon="cast",
                 default_index=0,
@@ -299,12 +610,12 @@ def main():
             articles_page()
         elif selected == "Calculate BMI":
             bmi_page()
-        elif selected == "Cek Statusmu":
+        elif selected == "Check Your Condition":
             obesity_classification_page()
         elif selected == "Help":
             help_page()
         elif selected == "Admin Page":
-            st.write("Admin page content goes here.")
+            admin_page()
         elif selected == "Logout":
             st.session_state['logged_in'] = False
             st.session_state['page'] = 'landing'

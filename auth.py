@@ -20,8 +20,7 @@ def create_user_table():
                   role TEXT)''')
     conn.commit()
     conn.close()
-    # Buat akun admin default
-    create_admin_user()
+    create_admin_user()  # Panggil untuk membuat akun admin default
 
 # Fungsi untuk membuat pengguna baru
 def create_user(email, password, role='user'):
@@ -34,9 +33,13 @@ def create_user(email, password, role='user'):
 # Fungsi untuk membuat akun admin default
 def create_admin_user():
     admin_email = "Adminnocounter21021@gmail.com"
-    admin_password = "AdminNihBoss"
+    admin_password = "AdminNihBoss123"
     if not user_exists(admin_email):
-        create_user(admin_email, admin_password, 'admin')
+        conn = create_connection()
+        c = conn.cursor()
+        c.execute("INSERT INTO users (email, password, role) VALUES (?, ?, ?)", (admin_email, hash_password(admin_password), 'admin'))
+        conn.commit()
+        conn.close()
 
 # Fungsi untuk memeriksa apakah pengguna ada
 def user_exists(email):
@@ -56,3 +59,18 @@ def check_credentials(email, password, role):
 
 # Panggil fungsi ini untuk memastikan tabel pengguna dibuat saat modul diimpor
 create_user_table()
+
+def create_article_table():
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS articles
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                  title TEXT,
+                  description TEXT,
+                  image_url TEXT,
+                  url TEXT)''')
+    conn.commit()
+    conn.close()
+
+# Panggil fungsi ini untuk memastikan tabel artikel dibuat saat modul diimpor
+create_article_table()
