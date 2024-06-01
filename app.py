@@ -29,7 +29,7 @@ def load_css():
         """
         <style>
         .stApp {
-            background-image: url("https://img.freepik.com/free-photo/sports-equipment-paper-background_23-2147735014.jpg?t=st=1717171847~exp=1717175447~hmac=8ce274d41b7add0762ef7d267cdad64bb214a4ea239582b26e4ba176d2e3870f&w=1060");
+            background-image: url("https://img.freepik.com/free-photo/sports-equipment-paper-background_23-2147735014.jpg?t=st=1717252039~exp=1717255639~hmac=6b96f57808c2272930c2e905900460b14a29814ad13b6ed845971813480cd69d&w=1380");
             background-size: cover;
             transition: background 0.5s ease;
         }
