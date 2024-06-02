@@ -248,10 +248,7 @@ def main_page():
     # Menampilkan grafik
     st.plotly_chart(fig)
 
-    # Menampilkan grafik
-    st.plotly_chart(fig)
-
-    # Grafik interaktif lainnya
+# Grafik interaktif lainnya
     age_data = {
         'Age Group': ['<18', '18-25', '26-35', '36-45', '46-55', '56-65', '>65'],
         'Count': [5, 15, 20, 10, 7, 3, 2]
@@ -272,24 +269,44 @@ def articles_page():
     st.write("Here are some interesting articles for you to read.")
     display_articles()
 
-# Halaman hitung BMI sebagai template untuk model ML
-def bmi_page():
-    st.title("Calculate BMI")
+# Halaman Video Workout
+def video_page():
+    st.title("Workout Videos")
+    
+    # Filter berdasarkan kategori BMI
+    bmi_category = st.selectbox("Select BMI Category", ["All", "Insufficient Weight", "Normal Weight", "Overweight Level 1", "Overweight Level 2", "Obesity Level 1", "Obesity Level 2", "Obesity Level 3"])
 
-    with st.form("bmi_form"):
-        height = st.number_input("Height (in cm)", min_value=50, max_value=250)
-        weight = st.number_input("Weight (in kg)", min_value=20, max_value=200)
-        submit_button = st.form_submit_button(label="Calculate BMI")
+    # Data video workout contoh
+    videos = [
+        {"title": "Workout for Insufficient Weight", "category": "Insufficient Weight", "url": "https://www.youtube.com/watch?v=GR5A8RHxRAw"},
+        {"title": "Workout for Normal Weight", "category": "Normal Weight", "url": "https://www.youtube.com/watch?v=FeR-4_Opt-g"},
+        {"title": "Workout for Overweight Level 1", "category": "Overweight Level 1", "url": "https://www.youtube.com/watch?v=7KSNmziMqog"},
+        {"title": "Workout for Overweight Level 2", "category": "Overweight Level 2", "url": "https://www.youtube.com/watch?v=UheajlsZ72E"},
+        {"title": "Workout for Obesity Level 1", "category": "Obesity Level 1", "url": "https://www.youtube.com/watch?v=-hSma-BRzoo"},
+        {"title": "Workout for Obesity Level 2", "category": "Obesity Level 2", "url": "https://www.youtube.com/watch?v=Xzg9SONKMD4"},
+        {"title": "Workout for Obesity Level 3", "category": "Obesity Level 3", "url": "https://www.youtube.com/watch?v=Eq4qBpBa07I"},
+    ]
 
-        if submit_button:
-            if height and weight:
-                bmi = weight / ((height / 100) ** 2)
-                st.write(f"Your BMI is: {bmi:.2f}")
-                
-                # Placeholder untuk hasil prediksi model ML
-                st.write("Predicted health status: ... (ML Model Placeholder)")
-            else:
-                st.error("Please enter both height and weight")
+    # Filter video berdasarkan kategori BMI yang dipilih
+    filtered_videos = videos if bmi_category == "All" else [video for video in videos if video["category"] == bmi_category]
+
+    for video in filtered_videos:
+        st.write(f"**{video['title']}**")
+        st.video(video["url"])
+
+    # Keterangan jenis rekomendasi video workout
+    recommendations = {
+        "Insufficient Weight": "Workouts for building muscle mass and gaining weight.",
+        "Normal Weight": "Balanced workouts for maintaining healthy weight and overall fitness.",
+        "Overweight Level 1": "Moderate intensity workouts for weight loss and fitness.",
+        "Overweight Level 2": "High intensity workouts for significant weight loss and improved health.",
+        "Obesity Level 1": "Workouts focused on high calorie burn and strength training.",
+        "Obesity Level 2": "Workouts designed for substantial weight loss and cardiovascular health.",
+        "Obesity Level 3": "Low impact, high intensity workouts tailored for significant weight loss and health improvement."
+    }
+
+    st.write("### Workout Recommendations")
+    st.write(recommendations.get(bmi_category, "Select a BMI category to see recommendations."))
 
 # Halaman klasifikasi obesitas
 def obesity_classification_page():
@@ -409,8 +426,25 @@ def obesity_classification_page():
                 st.write(f"Rekomendasi workout: {workout}")
                 st.write(f"Rekomendasi kalori harian: {calories}")
                 st.write(f"Rekomendasi jenis makanan: {food}")
+                # Video recommendations
+                videos = [
+                    {"title": "Workout for Insufficient Weight", "category": "Insufficient Weight", "url": "https://www.youtube.com/watch?v=GR5A8RHxRAw"},
+                    {"title": "Workout for Normal Weight", "category": "Normal Weight", "url": "https://www.youtube.com/watch?v=FeR-4_Opt-g"},
+                    {"title": "Workout for Overweight Level 1", "category": "Overweight Level 1", "url": "https://www.youtube.com/watch?v=7KSNmziMqog"},
+                    {"title": "Workout for Overweight Level 2", "category": "Overweight Level 2", "url": "https://www.youtube.com/watch?v=UheajlsZ72E"},
+                    {"title": "Workout for Obesity Level 1", "category": "Obesity Level 1", "url": "https://www.youtube.com/watch?v=-hSma-BRzoo"},
+                    {"title": "Workout for Obesity Level 2", "category": "Obesity Level 2", "url": "https://www.youtube.com/watch?v=Xzg9SONKMD4"},
+                    {"title": "Workout for Obesity Level 3", "category": "Obesity Level 3", "url": "https://www.youtube.com/watch?v=Eq4qBpBa07I"},
+                ]
+
+                filtered_videos = [video for video in videos if video["category"] == health_status]
+
+                for video in filtered_videos:
+                    st.write(f"**{video['title']}**")
+                    st.video(video["url"])
             else:
                 st.error("Please fill in all the details")
+
 
 # Fungsi untuk menampilkan artikel
 def display_articles():
@@ -494,37 +528,29 @@ def help_page():
 # Halaman landing
 def landing_page():
     st.markdown("""
-    <div class="title-box" style="text-align: center;">
+    <div class="title-box">
         <h1>Welcome to Go Motion</h1>
     </div>
-    <div class="info-box" style="text-align: center;">
+    <div class="info-box">
         <p>Platform untuk deteksi dini risiko kesehatan Anda</p>
     </div>
     """, unsafe_allow_html=True)
+
 
     # Animasi Lottie
     lottie_animation = load_lottie_url("https://lottie.host/2f5893df-cc66-48be-be2d-9092bd6a9877/xKC7RTy8kE.json")
     if lottie_animation:
         st_lottie(lottie_animation, height=300, key="landing")
 
-    # Centering the buttons using a column layout
-    col1, col2, col3 = st.columns([2, 1, 2])
+    col1, col2 = st.columns([4, 2])
     with col1:
-        st.write("")  # Just a placeholder to keep the structure
-
-    with col2:
-        if st.button("Sign Up"):
+        if st.button("Sign Up Now"):
             st.session_state['page'] = 'signup'
             st.experimental_rerun()
-
-        st.write("")  # Add some space between buttons
-
+    with col2:
         if st.button("Sign In"):
             st.session_state['page'] = 'login'
             st.experimental_rerun()
-
-    with col3:
-        st.write("")  # Just a placeholder to keep the structure
 
  # Menampilkan artikel dalam kolom
     display_articleslp()
@@ -604,9 +630,9 @@ def main():
         with st.sidebar:
             selected = option_menu(
                 menu_title="Menu",
-                options=["Home", "Articles", "Calculate BMI", "Check Your Condition", "Help", "Admin Page", "Logout"]
+                options=["Home", "Articles", "Workout Video", "Check Your Condition", "Help", "Admin Page", "Logout"]
                 if st.session_state['role'] == 'admin'
-                else ["Home", "Articles", "Calculate BMI", "Check Your Condition", "Help", "Logout"],
+                else ["Home", "Articles", "Workout Video", "Check Your Condition", "Help", "Logout"],
                 icons=["house", "book", "calculator", "check-circle", "question-circle", "gear", "door-open"],
                 menu_icon="cast",
                 default_index=0,
@@ -616,8 +642,8 @@ def main():
             main_page()
         elif selected == "Articles":
             articles_page()
-        elif selected == "Calculate BMI":
-            bmi_page()
+        elif selected == "Workout Video":
+            video_page()
         elif selected == "Check Your Condition":
             obesity_classification_page()
         elif selected == "Help":
