@@ -262,6 +262,7 @@ def main_page():
     if st.button("Logout"):
         st.session_state['logged_in'] = False
         st.experimental_rerun()
+        
 
 # Halaman artikel
 def articles_page():
@@ -307,6 +308,7 @@ def video_page():
 
     st.write("### Workout Recommendations")
     st.write(recommendations.get(bmi_category, "Select a BMI category to see recommendations."))
+ 
 
 # Halaman klasifikasi obesitas
 def obesity_classification_page():
@@ -436,15 +438,14 @@ def obesity_classification_page():
                     {"title": "Workout for Obesity Level 2", "category": "Obesity Level 2", "url": "https://www.youtube.com/watch?v=Xzg9SONKMD4"},
                     {"title": "Workout for Obesity Level 3", "category": "Obesity Level 3", "url": "https://www.youtube.com/watch?v=Eq4qBpBa07I"},
                 ]
-
                 filtered_videos = [video for video in videos if video["category"] == health_status]
 
                 for video in filtered_videos:
                     st.write(f"**{video['title']}**")
                     st.video(video["url"])
+
             else:
                 st.error("Please fill in all the details")
-
 
 # Fungsi untuk menampilkan artikel
 def display_articles():
@@ -565,40 +566,40 @@ def landing_page():
 def display_articleslp():
     articles = [
         {
-            "title": "Sit Down While You Eat. It Makes A Big Difference.",
-            "description": "Learn about the essential nutrients your body needs.",
-            "image_url": "https://d35oenyzp35321.cloudfront.net/MHC_Blog_Health_Benefits_of_Sitting_Down_to_Eat_38a8bf3be5.jpg",
-            "url": "https://www.maxhealthcare.in/blogs/sit-down-while-you-eat-it-makes-big-difference"
+            "title": "Pentingnya Aktif Bergerak untuk Jaga Berharganya Kesehatan Tubuh.",
+            "description": "Tahukah kamu bahwa aktif bergerak tidak hanya baik untuk kesehatan tubuh tapi juga bagi kesehatan mental serta menjaga penampilan tetap prima?.",
+            "image_url": "https://www.anlene.com/content/dam/countries/indonesia/anlene_indonesia/article/1280-08.-anlene_followup_february2021_pentingnya-aktif-bergerak-untuk-jaga-berharganya-kesehatan-tubuh-rev.jpg",
+            "url": "https://www.anlene.com/id/ms/pentingnya-aktif-bergerak.html"
         },
         {
-            "title": "Indian Diet Plan In Pregnancy",
-            "description": "Discover how staying healthy in pregnancy.",
-            "image_url": "https://d35oenyzp35321.cloudfront.net/indian_diet_plan_ae5b9f7f27.jpg",
-            "url": "https://www.maxhealthcare.in/blogs/indian-diet-plan-pregnancy"
+            "title": "8 Macam Buah yang Ampuh Turunkan Kolesterol",
+            "description": "Tubuh memproduksi kolesterol bukan tanpa alasan. Dalam proses pencernaan lemak makanan dan produksi sejumlah hormon seperti testosteron",
+            "image_url": "https://www.anlene.com/content/dam/anlene/AnleneIDnew/buah_turunkan_kolesterol.jpg",
+            "url": "https://www.anlene.com/id/ms/buah-penurun-kolesterol.html"
         },
         {
-            "title": "Understanding BMI",
-            "description": "A guide to understanding Body Mass Index and its implications.",
-            "image_url": "https://d35oenyzp35321.cloudfront.net/love_your_age_fce9d54f64.jpg",
-            "url": "https://www.maxhealthcare.in/blogs/love-your-age"
+            "title": "T4 Macam Penyakit Tulang Rapuh yang Harus Diwaspadai",
+            "description": "Ketika mendengar kata penyakit tulang rapuh, kebanyakan dari kita pasti otomatis berpikir osteoporosis. Faktanya, osteoporosis bukanlah satu-satunya",
+            "image_url": "https://www.anlene.com/content/dam/anlene/AnleneIDnew/01.%20Anlene_FollowUp_Oktober2021_4%20Macam%20Penyakit%20Tulang%20Rapuh%20yang%20Harus%20Diwaspadai%20.jpg",
+            "url": "https://www.anlene.com/id/ms/penyakit-tulang-rapuh.html"
         },
         {
-            "title": "Healthy Eating on a Budget",
-            "description": "Tips for maintaining a healthy diet without breaking the bank.",
-            "image_url": "https://via.placeholder.com/150",
-            "url": "https://example.com/article4"
+            "title": "Dukung Orang Tua Jadi Lansia Prima, Ini 7 Rekomendasi Olahraga untuk Lansia!",
+            "description": "Baik anak-anak, remaja, orang dewasa hingga orang tua, semua memiliki kebutuhan yang sama akan olahraga.",
+            "image_url": "https://www.anlene.com/content/dam/countries/indonesia/anlene_indonesia/article_2/1280-09.-anlene_followup_mei2021_dukung-orang-tua-jadi-lansia-prima,-ini-7-rekomendasi-olahraga-untuk-lansia!.jpg",
+            "url": "https://www.anlene.com/id/ms/olahraga-untuk-lansia.html"
         },
         {
-            "title": "Managing Stress",
-            "description": "Techniques to help you manage stress effectively.",
-            "image_url": "https://via.placeholder.com/150",
-            "url": "https://example.com/article5"
+            "title": "Jangan Disepelekan! Ginjal Punya Fungsi Penting untuk Tubuh",
+            "description": "Ginjal adalah organ tubuh yang terletak di bawah tulang rusuk bagian belakang, dekat bagian tengah punggung pada kedua sisi tulang belakang. ",
+            "image_url": "https://www.anlene.com/content/dam/anlene/AnleneIDnew/05.%20Anlene_FollowUp_March2022_Jangan%20Disepelekan!%20Ginjal%20Punya%20Fungsi%20Penting%20untuk%20Tubuh.jpg",
+            "url": "https://www.anlene.com/id/ms/pentingnya-ginjal-untuk-tubuh.html"
         },
         {
-            "title": "The Role of Sleep in Health",
-            "description": "Learn about the importance of sleep for your wellbeing.",
-            "image_url": "https://via.placeholder.com/150",
-            "url": "https://example.com/article6"
+            "title": "Pentingnya Aktif Bergerak untuk Jaga Berharganya Kesehatan Tubuh",
+            "description": "Tahukah kamu bahwa aktif bergerak tidak hanya baik untuk kesehatan tubuh tapi juga bagi kesehatan mental serta menjaga penampilan tetap prima? ",
+            "image_url": "https://www.anlene.com/content/dam/countries/indonesia/anlene_indonesia/article/1280-08.-anlene_followup_february2021_pentingnya-aktif-bergerak-untuk-jaga-berharganya-kesehatan-tubuh-rev.jpg",
+            "url": "https://www.anlene.com/id/ms/pentingnya-aktif-bergerak-untuk-jaga-berharganya-kesehatan-tubuh.html"
         }
     ]
 
@@ -633,7 +634,7 @@ def main():
                 options=["Home", "Articles", "Workout Video", "Check Your Condition", "Help", "Admin Page", "Logout"]
                 if st.session_state['role'] == 'admin'
                 else ["Home", "Articles", "Workout Video", "Check Your Condition", "Help", "Logout"],
-                icons=["house", "book", "calculator", "check-circle", "question-circle", "gear", "door-open"],
+                icons=["house", "book", "calculator", "check-circle", "question-circle",  "door-open"],
                 menu_icon="cast",
                 default_index=0,
             )
