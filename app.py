@@ -29,25 +29,33 @@ def load_css():
         """
         <style>
         .stApp {
-            background-image: url("https://img.freepik.com/free-photo/sports-equipment-paper-background_23-2147735014.jpg?t=st=1717252039~exp=1717255639~hmac=6b96f57808c2272930c2e905900460b14a29814ad13b6ed845971813480cd69d&w=1380");
+            background-image: url("https://images.unsplash.com/photo-1687804446680-d90cf8c60713?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
             background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             transition: background 0.5s ease;
+            color: #ffffff; /* Warna putih */
         }
         .title-box {
             text-align: center;
             margin-top: 2rem;
+            animation: fadeInDown 1s ease;
         }
         .title-box h1 {
             font-size: 3rem;
-            color: #fff;
+            color: #ffffff; /* Warna putih */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Efek bayangan */
+            margin: 0;
         }
         .info-box {
             text-align: center;
             margin-top: 2rem;
-            color: #fff;
-            background: rgba(0, 0, 0, 0.5);
+            color: #ffffff; /* Warna putih */
+            background: rgba(0, 0, 0, 0.7); /* Warna hitam transparan */
             padding: 1rem;
             border-radius: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Bayangan */
+            animation: fadeInUp 1s ease;
         }
         .center-buttons {
             display: flex;
@@ -59,39 +67,51 @@ def load_css():
             font-weight: bold;
             font-size: 1.1rem;
             padding: 0.5rem 1rem;
-            background-color: #007bff;
+            background-color: #ff69b4; /* Warna pink */
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             margin: 0 0.5rem;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease; /* Efek transisi */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Bayangan */
         }
         .center-buttons button:hover {
-            background-color: #0056b3;
+            background-color: #ff1493; /* Warna pink lebih gelap */
+            transform: scale(1.05); /* Efek perbesaran */
+        }
+        .center-buttons button:active {
+            transform: scale(0.95); /* Efek pengecilan saat diklik */
         }
         .extra-box {
             text-align: center;
             margin-top: 1rem;
-            color: #fff;
-            background: rgba(0, 0, 0, 0.5);
+            color: #ffffff; /* Warna putih */
+            background: rgba(0, 0, 0, 0.7); /* Warna hitam transparan */
             padding: 1rem;
             border-radius: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Bayangan */
+            animation: fadeIn 1.5s ease;
         }
         .top-menu {
             display: flex;
             justify-content: flex-end;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.7); /* Warna hitam transparan */
             padding: 0.5rem 1rem;
             position: sticky;
             top: 0;
             z-index: 1000;
+            animation: slideDown 0.5s ease;
         }
         .top-menu a {
             color: #fff;
             margin: 0 1rem;
             text-decoration: none;
             font-weight: bold;
+            transition: color 0.3s ease; /* Efek transisi */
+        }
+        .top-menu a:hover {
+            color: #ff69b4; /* Warna pink */
         }
         .button-container {
             display: flex;
@@ -102,18 +122,43 @@ def load_css():
             margin: 0 0.5rem;
         }
         .article-container {
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(50, 50, 50, 0.9);
             border-radius: 10px;
             padding: 10px;
             margin-top: 10px;
             text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Bayangan */
+            animation: fadeIn 1.5s ease;
         }
         .article-container img {
             border-radius: 10px;
+            transition: transform 0.3s ease; /* Efek transisi */
+        }
+        .article-container img:hover {
+            transform: scale(1.05); /* Efek perbesaran */
+        }
+        /* Animasi */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         </style>
         """, unsafe_allow_html=True
     )
+
+
 
 # Fungsi Validasi
 def check_uppercase(password):
@@ -224,7 +269,8 @@ def login():
 # Halaman utama setelah login
 def main_page():
     st.title("Welcome to Go Motion Dashboard")
-    st.write(f"Hello, {st.session_state['email']}! You are logged in as {st.session_state['role']}.")
+    st.write(f"Hello, {st.session_state['email']}! You are logged in as {st.session_state['role']} ")
+    st.write("In today's fast-Spaced environment, maintaining a healthy lifestyle is crucial, and early detection of obesity plays a vital role. This webapp uses machine learning technology to identify potential obesity risks early and providing personalized workout recommendations tailored to your individual health profile. By analyzing your unique health data, we create custom fitness plans designed to deliver the best results and support sustainable long-term health. Take the first step towards a healthier future with our comprehensive and user-friendly solution.")
 
     # Contoh data untuk grafik
     bmi_data = {
@@ -312,26 +358,33 @@ def video_page():
 
 # Halaman klasifikasi obesitas
 def obesity_classification_page():
+    import streamlit as st
+
     st.title("Check Your Condition")
 
     with st.form("obesity_form"):
-        age = st.slider("Age", min_value=1, max_value=120)
-        gender = st.selectbox("Gender", ["Male", "Female"])
-        height = st.slider("Height (in meters)", min_value=0.5, max_value=2.5, step=0.01)
-        weight = st.slider("Weight (in kg)", min_value=20, max_value=200)
+        # Create empty columns for padding on the left and right
+        col1, middle_padding, col2 = st.columns([1, 0.2, 1])
 
-        calc = st.selectbox("How often do you drink alcohol?", ["Never", "Sometimes", "Frequently", "Always"])
-        favc = st.selectbox("Do you eat high caloric food frequently?", ["No", "Yes"])
-        fcvc = st.slider("Do you usually eat vegetables in your meals?", min_value=0, max_value=10)
-        ncp = st.slider("How many main meals do you have daily?", min_value=0, max_value=10)
-        scc = st.selectbox("Do you monitor the calories you eat daily?", ["No", "Yes"])
-        smoke = st.selectbox("Do you smoke?", ["No", "Yes"])
-        ch20 = st.slider("How much water do you drink daily? (in liters)", min_value=0.0, max_value=10.0, step=0.1)
-        fhwo = st.selectbox("Family History With Overweight", ["No", "Yes"])
-        faf = st.slider("How often do you have physical activity? (days per week)", min_value=0, max_value=7)
-        tue = st.slider("How much time do you use technological devices daily? (in hours)", min_value=0, max_value=24)
-        caec = st.selectbox("Do you eat any food between meals?", ["No", "Sometimes", "Frequently", "Always"])
-        mtrans = st.selectbox("Which transportation do you usually use?", ["Automobile", "Motorbike", "Bike", "Public Transportation", "Walking"])
+        with col1:
+            age = st.slider("Age", min_value=1, max_value=120)
+            gender = st.selectbox("Gender", ["Male", "Female"])
+            height = st.slider("Height (in meters)", min_value=0.5, max_value=2.5, step=0.01)
+            weight = st.slider("Weight (in kg)", min_value=20, max_value=200)
+            calc = st.selectbox("How often do you drink alcohol?", ["Never", "Sometimes", "Frequently", "Always"])
+            favc = st.selectbox("Do you eat high caloric food frequently?", ["No", "Yes"])
+            fcvc = st.slider("Do you usually eat vegetables in your meals?", min_value=0, max_value=10)
+            ncp = st.slider("How many main meals do you have daily?", min_value=0, max_value=10)
+
+        with col2:
+            scc = st.selectbox("Do you monitor the calories you eat daily?", ["No", "Yes"])
+            smoke = st.selectbox("Do you smoke?", ["No", "Yes"])
+            ch20 = st.slider("How much water do you drink daily? (in liters)", min_value=0.0, max_value=10.0, step=0.1)
+            fhwo = st.selectbox("Family History With Overweight", ["No", "Yes"])
+            faf = st.slider("How often do you have physical activity? (days per week)", min_value=0, max_value=7)
+            tue = st.slider("How much time do you use technological devices daily? (in hours)", min_value=0, max_value=24)
+            caec = st.selectbox("Do you eat any food between meals?", ["No", "Sometimes", "Frequently", "Always"])
+            mtrans = st.selectbox("Which transportation do you usually use?", ["Automobile", "Motorbike", "Bike", "Public Transportation", "Walking"])
 
         submit_button = st.form_submit_button(label="Check Status")
 
@@ -533,7 +586,7 @@ def landing_page():
         <h1>Welcome to Go Motion</h1>
     </div>
     <div class="info-box">
-        <p>Platform untuk deteksi dini risiko kesehatan Anda</p>
+        <p>Early Obesity Risk Detection and Personalized Workout Recommendations WebApps</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -543,15 +596,19 @@ def landing_page():
     if lottie_animation:
         st_lottie(lottie_animation, height=300, key="landing")
 
-    col1, col2 = st.columns([4, 2])
-    with col1:
-        if st.button("Sign Up Now"):
-            st.session_state['page'] = 'signup'
-            st.experimental_rerun()
+    # Login Button
+    col1, col2, col3, col4 = st.columns([1, 1, 1, 1])
+
     with col2:
-        if st.button("Sign In"):
-            st.session_state['page'] = 'login'
-            st.experimental_rerun()
+        col2_1, col2_2 = st.columns([0.4, 0.6])
+        with col2_2:
+            if st.button("Sign Up"):
+                st.session_state['page'] = 'signup'
+                st.experimental_rerun()
+        with col3:
+            if st.button("Sign In"):
+                st.session_state['page'] = 'login'
+                st.experimental_rerun()
 
  # Menampilkan artikel dalam kolom
     display_articleslp()
