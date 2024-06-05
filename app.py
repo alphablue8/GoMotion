@@ -373,7 +373,6 @@ def obesity_classification_page():
                 obesity_classifier = load_model()
                 prediction = obesity_classifier.predict([[age, gender_value, height, weight, calc_value, favc_value, fcvc, ncp, scc_value, smoke_value, ch20, fhwo_value, faf, tue, caec_value, mtrans_value]])[0]
                 
-                st.write(f"Your BMI is: {weight / ((height) ** 2):.2f}")
                 # Display predicted health status
                 health_status = ""
                 if int(prediction) == 0:
@@ -392,7 +391,7 @@ def obesity_classification_page():
                     health_status = "Obesity Level 3"
 
                 st.write(f"Predicted health status: {health_status}")
-
+                st.write(f"Your BMI is: {weight / ((height) ** 2):.2f}")
                 # Get recommendations
                 workout = ""
                 calories = ""
