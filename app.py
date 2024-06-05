@@ -392,6 +392,7 @@ def obesity_classification_page():
 
                 st.write(f"Predicted health status: {health_status}")
                 st.write(f"Your BMI is: {weight / ((height) ** 2):.2f}")
+                
                 # Get recommendations
                 workout = ""
                 calories = ""
