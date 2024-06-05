@@ -31,7 +31,7 @@ def load_css():
         """
         <style>
         .stApp {
-            background-image: url("https://images.unsplash.com/photo-1687804446680-d90cf8c60713?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+            background-image: url("https://r4.wallpaperflare.com/wallpaper/707/220/899/gradient-blue-pink-abstract-art-wallpaper-a33b436d2de9cbc5dfa6225748ab3818.jpg");
             background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
@@ -274,62 +274,10 @@ def main_page():
     st.write(f"Hello, {st.session_state['email']}! You are logged in as {st.session_state['role']} ")
     st.write("In today's fast-Spaced environment, maintaining a healthy lifestyle is crucial, and early detection of obesity plays a vital role. This webapp uses machine learning technology to identify potential obesity risks early and providing personalized workout recommendations tailored to your individual health profile. By analyzing your unique health data, we create custom fitness plans designed to deliver the best results and support sustainable long-term health. Take the first step towards a healthier future with our comprehensive and user-friendly solution.")
     
-    # Grafik Kondisi Kesehatan dan Umur
-    data_list = [df_ot_final, df_ow_final, df_n, df_In]
-    data_name =["obesity_type", "over_weight_type", "normal", "Insufficient_Weight" ]
-
-    fig,axes = plt.subplots(nrows = 2, ncols = 2, figsize = (10,8))
-
-    for i in range(2):
-    
-        sns.kdeplot(ax = axes[i,0],data=data_list[i], x="Age", hue="NObeyesdad", fill =True)
-        axes[i, 0].set_title(f'{data_name[i]} vs Age')
-    
-        sns.kdeplot(ax = axes[i,1],data=data_list[i+2], x="Age", hue="NObeyesdad", fill =True)
-        axes[i, 1].set_title(f'{data_name[i+2]} vs Age')
-    
-    
-    
-    fig.suptitle('Obesity_levels vs Age')
-    plt.tight_layout()
-    plt.show()
-    
-    # Contoh data untuk grafik
-    bmi_data = {
-        'Category': ['Insufficient Weight', 'Normal Weight', 'Overweight Level 1', 'Overweight Level 2', 'Obesity Level 1', 'Obesity Level 2', 'Obesity Level 3'],
-        'Count': [5, 20, 10, 7, 15, 5, 3]
-    }
-    fig = px.bar(
-        bmi_data, 
-        x='Category', 
-        y='Count', 
-        title='BMI Categories Distribution',
-        template='plotly_dark'
-    )
-    fig.update_layout(
-        title={'x': 0.5, 'xanchor': 'center'},
-        font=dict(size=14),
-        plot_bgcolor='rgba(0,0,0,0)',
-        paper_bgcolor='rgba(0,0,0,0)'
-    )
-
-    # Menampilkan grafik
-    st.plotly_chart(fig)
-
-# Grafik interaktif lainnya
-    age_data = {
-        'Age Group': ['<18', '18-25', '26-35', '36-45', '46-55', '56-65', '>65'],
-        'Count': [5, 15, 20, 10, 7, 3, 2]
-    }
-    fig2 = px.pie(age_data, values='Count', names='Age Group', title='Age Distribution of Users')
-
-    st.plotly_chart(fig2)
-
-    st.write("Dashboard ini memberikan gambaran umum tentang data pengguna dan distribusi kategori BMI.")
-
-    if st.button("Logout"):
-        st.session_state['logged_in'] = False
-        st.experimental_rerun()
+    # Menampilkan Grafik Kondisi Kesehatan dan Umur
+    st.image("https://i.ibb.co.com/YkDBYMG/age.png", use_column_width=True)
+    st.image("https://i.ibb.co.com/Y81DHbc/weight.png", use_column_width=True)
+    st.image("https://i.ibb.co.com/qJ8YJTK/height.png", use_column_width=True)
         
 
 # Halaman artikel
@@ -597,9 +545,20 @@ def delete_article(article_id):
     conn.close()
 
 # Halaman bantuan
+# Halaman bantuan
 def help_page():
     st.title("Help")
     st.write("This is the help page. How can we assist you?")
+    faq = {
+        "Apa itu Go-Motio?": "Aplikasi ini adalah platform untuk deteksi awal resiko obesitas dan rekomendasi personal workout sesuai kondisi tubuh",
+        "Bagaimana cara mendaftar?": "Untuk mendaftar, klik tombol 'Sign Up' dan masukkan data yang diminta",
+        "Bagaimana cara masuk?": "Untuk masuk, klik tombol 'Sign In' dan masukkan data yang diminta sesuai yang telah didaftarkan",
+        "Bagaimana cara menghubungi dukungan pelanggan?": "Anda bisa menghubungi dukungan pelanggan melalui Admin",
+    }
+
+    for question, answer in faq.items():
+        with st.expander(question):
+            st.write(answer)
 
 # Halaman landing
 def landing_page():
