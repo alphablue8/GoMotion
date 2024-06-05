@@ -9,6 +9,8 @@ from PIL import Image
 import sqlite3
 import plotly.express as px
 import plotly.graph_objects as go
+import seaborn as sns
+
 
 # Fungsi untuk memuat animasi Lottie dari URL
 def load_lottie_url(url):
@@ -271,7 +273,27 @@ def main_page():
     st.title("Welcome to Go Motion Dashboard")
     st.write(f"Hello, {st.session_state['email']}! You are logged in as {st.session_state['role']} ")
     st.write("In today's fast-Spaced environment, maintaining a healthy lifestyle is crucial, and early detection of obesity plays a vital role. This webapp uses machine learning technology to identify potential obesity risks early and providing personalized workout recommendations tailored to your individual health profile. By analyzing your unique health data, we create custom fitness plans designed to deliver the best results and support sustainable long-term health. Take the first step towards a healthier future with our comprehensive and user-friendly solution.")
+    
+    # Grafik Kondisi Kesehatan dan Umur
+    data_list = [df_ot_final, df_ow_final, df_n, df_In]
+    data_name =["obesity_type", "over_weight_type", "normal", "Insufficient_Weight" ]
 
+    fig,axes = plt.subplots(nrows = 2, ncols = 2, figsize = (10,8))
+
+    for i in range(2):
+    
+        sns.kdeplot(ax = axes[i,0],data=data_list[i], x="Age", hue="NObeyesdad", fill =True)
+        axes[i, 0].set_title(f'{data_name[i]} vs Age')
+    
+        sns.kdeplot(ax = axes[i,1],data=data_list[i+2], x="Age", hue="NObeyesdad", fill =True)
+        axes[i, 1].set_title(f'{data_name[i+2]} vs Age')
+    
+    
+    
+    fig.suptitle('Obesity_levels vs Age')
+    plt.tight_layout()
+    plt.show()
+    
     # Contoh data untuk grafik
     bmi_data = {
         'Category': ['Insufficient Weight', 'Normal Weight', 'Overweight Level 1', 'Overweight Level 2', 'Obesity Level 1', 'Obesity Level 2', 'Obesity Level 3'],
