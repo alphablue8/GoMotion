@@ -668,7 +668,7 @@ def main():
     if st.session_state['logged_in']:
         with st.sidebar:
             selected = option_menu(
-                menu_title="Menu",
+                menu_title="GoMotion",
                 options=["Home", "Articles", "Workout Video", "Check Your Condition", "Help", "Admin Page", "Logout"]
                 if st.session_state['role'] == 'admin'
                 else ["Home", "Articles", "Workout Video", "Check Your Condition", "Help", "Logout"],
