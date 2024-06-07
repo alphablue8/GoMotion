@@ -327,7 +327,7 @@ def video_page():
     st.write(recommendations.get(bmi_category, "Select a BMI category to see recommendations."))
  
 
-# Halaman klasifikasi obesitas
+# Halaman Check Your Condition
 def obesity_classification_page():
     import streamlit as st
 
