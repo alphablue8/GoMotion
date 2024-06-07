@@ -20,4 +20,4 @@ Features
 Installation
 To get started with Go-Motion, follow these steps:
 1. Clone this repository
-2. run app.py and type "streamlit run app.py" in the terminal
+2. Run app.py and type "streamlit run app.py" in the terminal
