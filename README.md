@@ -1,7 +1,8 @@
 # Skilvul Innovation Challenge Capstone Project  - Kelompok 4 HealthCare 
 # GoMotion
 ## Machine Learning Based Early Obesity Risk Detection and Personalized Workout Recommendations Apps
-Kelompok	: 	4
+Kelompok	: 	4 Healthcare
+
 Anggota 	:
 1. Alhanafil Fauzi
 2. Anggoro Maliky
