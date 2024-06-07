@@ -567,7 +567,7 @@ def landing_page():
         <h1>Welcome to Go Motion</h1>
     </div>
     <div class="info-box">
-        <p>Early Obesity Risk Detection and Personalized Workout Recommendations WebApps</p>
+        <p>Machine Learning Based Early Obesity Risk Detection and Personalized Workout Recommendations WebApps</p>
     </div>
     """, unsafe_allow_html=True)
 
